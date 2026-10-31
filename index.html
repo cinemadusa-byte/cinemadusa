@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080808">
+  <title>CINEMADUSA | Sinema Dünyası</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="#" onclick="showSection('movie'); return false;">
+    CINE<span>MADUSA</span>
+  </a>
+
+  <nav class="main-nav">
+    <button onclick="showSection('movie')">Ana Sayfa</button>
+    <button onclick="showSection('movie')">Filmler</button>
+    <button onclick="showSection('series')">Diziler</button>
+    <button class="nav-chat" onclick="showChatHub()">Film Chat</button>
+ <button onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">İletişim</button>
+</nav>
+</header>
+
+<main>
+  <section id="homeSection">
+    <section class="hero">
+      <div class="hero-content">
+        <p class="eyebrow">CINEMADUSA PRESENTS</p>
+        <h1>SİNEMANIN <span>YENİ ADRESİ</span></h1>
+        <p>Filmleri keşfet, dizileri takip et, sinema tutkunlarıyla tartış.</p>
+        <div class="hero-actions">
+          <button class="primary-btn" onclick="showSection('movie')">Filmleri Keşfet</button>
+          <button class="outline-btn" onclick="showChatHub()">Film Chat'e Katıl</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">KEŞFET</p>
+          <h2 id="catalogHeading">Popüler Filmler</h2>
+        </div>
+        <span id="catalogCount" class="count-label">Yükleniyor...</span>
+      </div>
+
+      <div class="catalog-tools">
+        <input id="catalogSearch" type="search" placeholder="Film veya dizi ara...">
+        <select id="catalogSort">
+          <option value="popular">Popülerlik</option>
+          <option value="rating">IMDb puanı</option>
+          <option value="year">Yayın yılı</option>
+          <option value="az">İsme göre</option>
+        </select>
+      </div>
+
+      <div id="catalogGrid" class="movie-grid">
+        <div class="loading-message">Arşiv hazırlanıyor...</div>
+      </div>
+      <button id="loadMoreBtn" class="load-more" onclick="showMore()">Daha Fazla Göster</button>
+    </section>
+  </section>
+
+  <!-- FILM CHAT MERKEZI -->
+  <section id="chatHub" class="chat-hub hidden">
+    <div class="hub-heading">
+      <p class="eyebrow">CINEMADUSA COMMUNITY</p>
+      <h1>FILM <span>CHAT</span></h1>
+      <p>Bütün filmlerin ve dizilerin kendilerine ait sohbet odaları.</p>
+    </div>
+
+    <div class="hub-tabs">
+      <button id="hubMovieTab" class="hub-tab active" onclick="setHubType('movie')">
+        FİLMLER <span id="hubMovieCount">150</span>
+      </button>
+      <button id="hubSeriesTab" class="hub-tab" onclick="setHubType('series')">
+        DİZİLER <span id="hubSeriesCount">100</span>
+      </button>
+    </div>
+
+    <div class="hub-search-wrap">
+      <span class="search-symbol">⌕</span>
+      <input id="chatHubSearch" type="search" placeholder="Film veya dizi ara...">
+      <button id="clearHubSearch" onclick="clearHubSearch()">TEMİZLE</button>
+    </div>
+
+    <div class="hub-results-heading">
+      <h2 id="hubListTitle">Film Sohbet Odaları</h2>
+      <span id="hubResultCount">Yükleniyor...</span>
+    </div>
+
+    <div id="chatHubGrid" class="hub-grid">
+      <div class="loading-message">Sohbet odaları hazırlanıyor...</div>
+    </div>
+  </section>
+
+  <!-- SOHBET ODASI -->
+  <section id="chatPage" class="chat-page hidden">
+    <button class="back-button" onclick="backFromChat()">← Film Chat listesine dön</button>
+
+    <div class="room-header">
+      <img id="roomPoster" src="" alt="Film afişi">
+      <div>
+        <p class="eyebrow">CINEMADUSA CHAT ROOM</p>
+        <h1 id="roomTitle">Sohbet Odası</h1>
+        <p id="roomSubtitle">Bu yapım hakkında konuş.</p>
+      </div>
+    </div>
+
+    <div class="chat-panel">
+      <div class="chat-panel-heading">
+        <div>
+          <h2>İzleyici Tartışmaları</h2>
+          <p>Bu yapımın sohbet odası</p>
+        </div>
+        <span class="online-indicator">SOHBET ODASI</span>
+      </div>
+
+      <div id="chatMessages" class="chat-messages">
+        <div class="empty-chat">Henüz mesaj yok. İlk yorumu sen yaz.</div>
+      </div>
+
+      <div id="replyPreview" class="reply-preview hidden">
+        <span id="replyPreviewText"></span>
+        <button onclick="cancelReply()">×</button>
+      </div>
+
+      <div class="chat-compose">
+        <input id="chatUsername" type="text" maxlength="24" placeholder="Kullanıcı adın">
+        <textarea id="chatInput" rows="3" maxlength="1000" placeholder="Bu yapım hakkında düşüncelerini yaz..."></textarea>
+        <div class="compose-bottom">
+          <span id="charCount">0 / 1000</span>
+          <button class="primary-btn" onclick="sendChatMessage()">MESAJI GÖNDER</button>
+        </div>
+      </div>
+    </div>
+    <p class="local-notice">Bilgi: Bu sürümde sohbet mesajları yalnızca bu tarayıcıda saklanır. Farklı ziyaretçiler arasında ortak sohbet için sunucu bağlantısı gerekir.</p>
+  </section>
+
+  <!-- DETAY PENCERESİ -->
+  <div id="detailModal" class="modal hidden" onclick="modalBackdrop(event)">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeDetail()">×</button>
+      <div class="detail-layout">
+        <img id="detailPoster" src="" alt="Afiş">
+        <div class="detail-info">
+          <p class="eyebrow" id="detailType">CINEMADUSA</p>
+          <h2 id="detailTitle"></h2>
+          <div id="detailMeta" class="detail-meta"></div>
+          <p id="detailDescription" class="detail-description"></p>
+          <div class="detail-actions">
+            <button class="primary-btn" onclick="openSelectedChat()">FİLM CHAT</button>
+            <button class="outline-btn" onclick="openTrailer()">FRAGMANI ARA</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<<footer id="contact" class="site-footer">
+  <a class="brand footer-brand" href="#">CINE<span>MADUSA</span></a>
+  <p>Sinema dünyasının buluşma noktası.</p>
+  <p>Reklam ve İş Birliği: cinemadusa@gmail.com</p>
+  <small>© 2026 CINEMADUSA. Tüm hakları saklıdır.</small>
+</footer>
+
+<script src="data.js"></script>
+<script>
+let currentType = "movie";
+let currentItems = [];
+let visibleCount = 30;
+let selectedItem = null;
+let hubType = "movie";
+let chatReturnToHub = false;
+let replyTarget = null;
+
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  })[char]);
+}
+
+function translateGenres(genres) {
+  const map = {
+    Action:"Aksiyon", Adventure:"Macera", Animation:"Animasyon",
+    Comedy:"Komedi", Crime:"Suç", Documentary:"Belgesel",
+    Drama:"Dram", Family:"Aile", Fantasy:"Fantastik",
+    History:"Tarih", Horror:"Korku", Music:"Müzik",
+    Mystery:"Gizem", Romance:"Romantik", Science:"Bilim Kurgu",
+    "Science Fiction":"Bilim Kurgu", Thriller:"Gerilim",
+    War:"Savaş", Western:"Western", Biography:"Biyografi",
+    Sport:"Spor", Reality:"Reality", News:"Haber",
+    Talk:"Söyleşi", Kids:"Çocuk"
+  };
+  return (genres || []).map(g => map[g] || g).join(" • ");
+}
+
+function showSection(type) {
+  currentType = type;
+  visibleCount = 30;
+  $("homeSection").classList.remove("hidden");
+  $("chatHub").classList.add("hidden");
+  $("chatPage").classList.add("hidden");
+  $("catalogHeading").textContent = type === "movie" ? "Popüler Filmler" : "Popüler Diziler";
+  $("catalogSearch").value = "";
+  renderCatalog();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function showChatHub() {
+  $("homeSection").classList.add("hidden");
+  $("chatPage").classList.add("hidden");
+  $("chatHub").classList.remove("hidden");
+  $("chatHubSearch").value = "";
+  renderChatHub();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function setHubType(type) {
+  hubType = type;
+  $("hubMovieTab").classList.toggle("active", type === "movie");
+  $("hubSeriesTab").classList.toggle("active", type === "series");
+  $("hubListTitle").textContent = type === "movie" ? "Film Sohbet Odaları" : "Dizi Sohbet Odaları";
+  $("chatHubSearch").value = "";
+  renderChatHub();
+}
+
+function clearHubSearch() {
+  $("chatHubSearch").value = "";
+  renderChatHub();
+}
+
+function getCurrentItems() {
+  return hubType === "movie" ? films : series;
+}
+
+function renderChatHub() {
+  const items = getCurrentItems();
+  const query = $("chatHubSearch").value.trim().toLocaleLowerCase("tr");
+  const filtered = items.filter(item =>
+    (item.title || "").toLocaleLowerCase("tr").includes(query) ||
+    (item.year || "").toString().includes(query)
+  );
+
+  $("hubMovieCount").textContent = films.length;
+  $("hubSeriesCount").textContent = series.length;
+  $("hubResultCount").textContent = `${filtered.length} yapım`;
+
+  if (!filtered.length) {
+    $("chatHubGrid").innerHTML = '<div class="empty-chat">Aradığın yapım bulunamadı.</div>';
+    return;
+  }
+
+  $("chatHubGrid").innerHTML = filtered.map(item => `
+    <article class="hub-card">
+      <img src="${escapeHTML(item.poster)}" alt="${escapeHTML(item.title)}" loading="lazy"
+        onerror="this.src='https://placehold.co/300x450/171717/FFD700?text=CINEMADUSA'">
+      <div class="hub-card-info">
+        <h3>${escapeHTML(item.title)}</h3>
+        <p>${escapeHTML(item.year || "Yıl bilgisi yok")}</p>
+        <span>${escapeHTML(translateGenres(item.genres).split(" • ").slice(0,2).join(" • ") || "Sinema")}</span>
+        <button onclick="enterHubRoom('${escapeHTML(item.type)}','${escapeHTML(item.id)}')">
+          SOHBET ODASINA GİR
+        </button>
+      </div>
+    </article>
+  `).join("");
+}
+
+function enterHubRoom(type, id) {
+  const list = type === "series" ? series : films;
+  const item = list.find(x => String(x.id) === String(id));
+  if (item) openChat(item, true);
+}
+
+function renderCatalog() {
+  currentItems = currentType === "movie" ? films : series;
+  const query = $("catalogSearch").value.trim().toLocaleLowerCase("tr");
+  const sort = $("catalogSort").value;
+
+  let filtered = currentItems.filter(item =>
+    (item.title || "").toLocaleLowerCase("tr").includes(query)
+  );
+
+  if (sort === "rating") filtered.sort((a,b) => (b.rating || 0) - (a.rating || 0));
+  if (sort === "year") filtered.sort((a,b) => (b.year || 0) - (a.year || 0));
+  if (sort === "az") filtered.sort((a,b) => a.title.localeCompare(b.title, "tr"));
+
+  $("catalogCount").textContent = `${filtered.length} yapım`;
+  const shown = filtered.slice(0, visibleCount);
+
+  $("catalogGrid").innerHTML = shown.length ? shown.map(item => `
+    <article class="movie-card" onclick="openDetail('${escapeHTML(item.type)}','${escapeHTML(item.id)}')">
+      <div class="poster-wrap">
+        <img src="${escapeHTML(item.poster)}" alt="${escapeHTML(item.title)}" loading="lazy"
+          onerror="this.src='https://placehold.co/300x450/171717/FFD700?text=CINEMADUSA'">
+        <span class="rating-badge">★ ${Number(item.rating || 0).toFixed(1)}</span>
+      </div>
+      <div class="movie-card-info">
+        <h3>${escapeHTML(item.title)}</h3>
+        <p>${escapeHTML(item.year || "")}</p>
+      </div>
+    </article>
+  `).join("") : '<div class="empty-chat">Sonuç bulunamadı.</div>';
+
+  $("loadMoreBtn").classList.toggle("hidden", shown.length >= filtered.length);
+}
+
+function showMore() {
+  visibleCount += 30;
+  renderCatalog();
+}
+
+function findItem(type, id) {
+  return (type === "series" ? series : films).find(x => String(x.id) === String(id));
+}
+
+function openDetail(type, id) {
+  selectedItem = findItem(type, id);
+  if (!selectedItem) return;
+
+  $("detailPoster").src = selectedItem.poster;
+  $("detailTitle").textContent = selectedItem.title;
+  $("detailType").textContent = type === "series" ? "DİZİ DETAYI" : "FİLM DETAYI";
+  $("detailMeta").textContent = [
+    selectedItem.year,
+    translateGenres(selectedItem.genres),
+    selectedItem.rating ? `IMDb ${Number(selectedItem.rating).toFixed(1)}` : ""
+  ].filter(Boolean).join("  •  ");
+  $("detailDescription").textContent = selectedItem.description || "Bu yapım için açıklama bilgisi bulunmuyor.";
+  $("detailModal").classList.remove("hidden");
+}
+
+function closeDetail() {
+  $("detailModal").classList.add("hidden");
+}
+
+function modalBackdrop(event) {
+  if (event.target === $("detailModal")) closeDetail();
+}
+
+function openSelectedChat() {
+  if (selectedItem) openChat(selectedItem, false);
+}
+
+function openTrailer() {
+  if (!selectedItem) return;
+  const query = encodeURIComponent(selectedItem.title + " official trailer");
+  window.open("https://www.youtube.com/results?search_query=" + query, "_blank");
+}
+
+function openChat(item, fromHub = false) {
+  if (!item) return;
+  chatReturnToHub = fromHub;
+  selectedItem = item;
+  closeDetail();
+
+  $("homeSection").classList.add("hidden");
+  $("chatHub").classList.add("hidden");
+  $("chatPage").classList.remove("hidden");
+
+  $("roomPoster").src = item.poster;
+  $("roomTitle").textContent = item.title;
+  $("roomSubtitle").textContent = `${item.year || ""} • ${translateGenres(item.genres)}`;
+  renderMessages();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function backFromChat() {
+  if (chatReturnToHub) {
+    showChatHub();
+  } else {
+    showSection(selectedItem?.type || "movie");
+  }
+}
+
+function roomStorageKey() {
+  return `cinemadusa_chat_${selectedItem.type}_${selectedItem.id}`;
+}
+
+function getMessages() {
+  try {
+    return JSON.parse(localStorage.getItem(roomStorageKey()) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveMessages(messages) {
+  localStorage.setItem(roomStorageKey(), JSON.stringify(messages));
+}
+
+function renderMessages() {
+  const messages = getMessages();
+  if (!messages.length) {
+    $("chatMessages").innerHTML = '<div class="empty-chat">Henüz mesaj yok. İlk yorumu sen yaz.</div>';
+    return;
+  }
+
+  $("chatMessages").innerHTML = messages.map(message => `
+    <article class="chat-message">
+      <div class="message-top">
+        <strong>${escapeHTML(message.user)}</strong>
+        <time>${escapeHTML(message.time)}</time>
+      </div>
+      ${message.reply ? `<div class="message-reply">Yanıtlanan: ${escapeHTML(message.reply)}</div>` : ""}
+      <p>${escapeHTML(message.text)}</p>
+      <button class="reply-button" onclick="replyToMessage('${escapeHTML(message.id)}')">Yanıtla</button>
+    </article>
+  `).join("");
+  $("chatMessages").scrollTop = $("chatMessages").scrollHeight;
+}
+
+function replyToMessage(id) {
+  const message = getMessages().find(x => x.id === id);
+  if (!message) return;
+  replyTarget = message;
+  $("replyPreviewText").textContent = `${message.user}: ${message.text.slice(0,90)}`;
+  $("replyPreview").classList.remove("hidden");
+  $("chatInput").focus();
+}
+
+function cancelReply() {
+  replyTarget = null;
+  $("replyPreview").classList.add("hidden");
+}
+
+function sendChatMessage() {
+  if (!selectedItem) return;
+  const user = $("chatUsername").value.trim() || "Sinema Tutkunu";
+  const text = $("chatInput").value.trim();
+  if (!text) return;
+
+  const messages = getMessages();
+  messages.push({
+    id: `${Date.now()}_${Math.random().toString(36).slice(2,8)}`,
+    user, text,
+    time: new Date().toLocaleString("tr-TR"),
+    reply: replyTarget ? `${replyTarget.user}: ${replyTarget.text}` : ""
+  });
+
+  saveMessages(messages);
+  $("chatInput").value = "";
+  $("charCount").textContent = "0 / 1000";
+  cancelReply();
+  renderMessages();
+}
+
+$("chatHubSearch").addEventListener("input", renderChatHub);
+$("catalogSearch").addEventListener("input", () => { visibleCount = 30; renderCatalog(); });
+$("catalogSort").addEventListener("change", renderCatalog);
+$("chatInput").addEventListener("input", () => {
+  $("charCount").textContent = `${$("chatInput").value.length} / 1000`;
+});
+$("chatInput").addEventListener("keydown", event => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendChatMessage();
+  }
+});
+
+async function startCinemadusa() {
+  try {
+    $("catalogGrid").innerHTML = '<div class="loading-message">150 film ve 100 dizi yükleniyor...</div>';
+    await loadCatalog();
+    renderCatalog();
+    renderChatHub();
+  } catch (error) {
+    console.error(error);
+    $("catalogGrid").innerHTML = '<div class="empty-chat">Arşiv yüklenemedi. İnternet bağlantını kontrol edip sayfayı yenile.</div>';
+    $("chatHubGrid").innerHTML = '<div class="empty-chat">Sohbet listesi yüklenemedi.</div>';
+  }
+}
+
+startCinemadusa();
+</script>
+</body>
+</html>
