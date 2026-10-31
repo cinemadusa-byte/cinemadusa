@@ -3,10 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="/cinemadusa/manifest.json">
+<meta name="theme-color" content="#080808">
+<meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#080808">
   <title>CINEMADUSA | Sinema Dünyası</title>
   <link rel="stylesheet" href="style.css">
 </head>
+  <script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/cinemadusa/service-worker.js")
+      .then(() => console.log("CINEMADUSA uygulaması hazır"))
+      .catch(error => console.log("Hata:", error));
+  });
+}
+</script>
 <body>
 
 <header class="site-header">
