@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>CINEMADUSA Icon Generator</title>
+</head>
+<body style="background:#080808;color:#f5c518;font-family:Arial;text-align:center;padding:30px">
+<h1>CINEMADUSA</h1>
+<p>Uygulama simgelerini indir</p>
+<canvas id="c" width="512" height="512" style="width:180px"></canvas>
+<br><br>
+<button onclick="download(192)">192x192 PNG İndir</button>
+<button onclick="download(512)">512x512 PNG İndir</button>
+<script>
+function draw(size) {
+ const c=document.createElement("canvas");
+ c.width=c.height=size;
+ const x=c.getContext("2d");
+ x.fillStyle="#080808";
+ x.fillRect(0,0,size,size);
+ x.strokeStyle="#f5c518";
+ x.lineWidth=size*.035;
+ x.beginPath();
+ x.roundRect(size*.08,size*.08,size*.84,size*.84,size*.14);
+ x.stroke();
+ x.fillStyle="#f5c518";
+ x.font="bold "+(size*.65)+"px Arial";
+ x.textAlign="center";
+ x.textBaseline="middle";
+ x.fillText("C",size/2,size/2);
+ return c;
+}
+document.getElementById("c").replaceWith(draw(512));
+function download(size) {
+ const a=document.createElement("a");
+ a.download="icon-"+size+".png";
+ a.href=draw(size).toDataURL("image/png");
+ a.click();
+}
+</script>
+</body>
+</html>
