@@ -1,0 +1,12 @@
+{
+  "id": "/cinemadusa/",
+  "name": "CINEMADUSA",
+  "short_name": "CINEMADUSA",
+  "description": "Film ve dizi dünyası",
+  "start_url": "/cinemadusa/",
+  "scope": "/cinemadusa/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080808",
+  "theme_color": "#080808"
+}
